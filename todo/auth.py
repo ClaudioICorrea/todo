@@ -42,7 +42,7 @@ def login():
         db, c = get_db()
         error = None   
         c.execute(
-            'SELECT * FROM user where username = %s',(username)
+            'SELECT * FROM user where username = %s',(username,)
         )
         user = c.fetchone()
         if user is None:
