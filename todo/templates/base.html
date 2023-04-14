@@ -5,11 +5,11 @@
     <h1> Todo List</h1>
     <ul>
         {% if g.user %}
-        <li> <span> {{g.user['username']}}</span></li>
-        <li><a href = "{{url_for('auth.logout')}}"></a>Cerrar sesión</li>
+            <li> <span> {{g.user['username']}}</span></li>
+            <li><a href = "{{ url_for('auth.logout') }}">Cerrar sesión</a></li>
         {% else %}
-        <li><a href = "{{url_for('auth.register')}}"></a>Registrarse</li>
-        <li><a href = "{{url_for('auth.login')}}"></a>Iniciar sesión</li>
+            <li><a href = "{{ url_for('auth.register') }}">Registrarse</a></li>
+            <li><a href = "{{ url_for('auth.login') }}">Iniciar sesión</a></li>
         {% endif %}
     </ul>
 </nav>
