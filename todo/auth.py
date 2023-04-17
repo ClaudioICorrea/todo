@@ -47,7 +47,7 @@ def login():
         user = c.fetchone()
         if user is None:
             error = 'Usuario y o contraseña inválida'
-        elif not check_password_hash(user['password', password]):
+        elif not check_password_hash(user['password'], password):
             error = 'Usuario y o contraseña inválida'
         if error is None:
             session.clear()
@@ -71,6 +71,11 @@ def login_required(view):
     @functools.wraps(view)
     def wrapped_view(**kwargs):
         if g.user is None:
-            return redirect(url_for('auth.login'))
+            return redirect(url_for('auth/login'))
         return view(**kwargs)
     return wrapped_view
+
+@bp.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('login'))
