@@ -13,10 +13,10 @@
         <li class="todo">
             <div>
                 <h1>
-                    {% if todo['completed'] == 1 %}
-                        <strke>{{ todo['description'] }} </strke>
+                    {% if todo['completed'] == 1  %}
+                        <s>{{ todo['description'] }}</s>
                     {% else %}
-                    {{ todo['description']}}
+                        {{ todo['description']}}
                     {% endif %}                    
                 </h1>
                 <div class = "about" >{{ todo['created_at'].strftime('%Y-%m-%d') }}</div>

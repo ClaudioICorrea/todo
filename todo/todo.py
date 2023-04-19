@@ -13,7 +13,9 @@ bp = Blueprint('todo',__name__)
 def index():
     db, c = get_db()
     c.execute(
-        'SELECT t.id, t.created_at, t.description, u.username, t.completed  t FROM todo t JOIN user u on t.created_by = u.id ORDER BY created_at desc'
+        'SELECT t.id, t.created_at, t.description, u.username, t.completed'
+        ' FROM todo t JOIN user u on t.created_by = u.id where'
+        ' t.created_by = %s ORDER BY created_at desc', (g.user['id'],)
     )
     luke = c.fetchall()
     return render_template('todo/index.html', todos=luke)
@@ -38,14 +40,47 @@ def _create():
             return redirect(url_for('todo.index'))
 
     return render_template('todo/_create.html')
+def get_todo(id):
+    db,c =get_db()
+    c.execute(
+        'select t.id, t.description, t.completed, t.created_by, t.created_at, u.username'
+        ' from todo t join user u on t.created_by = u.id where t.id =%s',(id,)
+    )
+
+    todo = c.fetchone()
+    if todo is None:
+        abort(404, "El todo de id {0} no existe".format(id))
+    return todo    
 
 @bp.route('/<int:id>/_update', methods=['GET','POST'])
 @login_required
 def _update(id):
+    todo = get_todo(id)
+    if request.method == 'POST':
+        description = request.form['description']
+        completed = True if request.form.get('completed') == 'on' else False
+        error = None
+
+        if not description:
+            error = "La descripción es requerida"
+        if error is not None:
+            flash(error)
+        else:
+            db, c = get_db()
+            c.execute(
+                'update todo set description = %s, completed = %s where id = %s and created_by = %s ',(description, completed, id, g.user['id'])    
+                ) 
+            db.commit()
+            return redirect(url_for('todo.index'))
     return render_template('todo/_update.html', todo=todo)
 
 
 @bp.route('/<int:id>/delete', methods=['POST'])
 @login_required
-def delete():
-    return ''
+def delete(id):
+    db, c =get_db()
+    c.execute(
+        'delete from todo where id = %s and created_by = %s', (id, g.user['id'])
+    )
+    db.commit()
+    return redirect(url_for('todo.index'))
